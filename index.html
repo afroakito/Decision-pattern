@@ -198,7 +198,7 @@
 </div>
 
 <script>
-const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfPZnzDSjivR0UWXX--d_zRJ4a8ms6Wyyyu5ui-hqkINcraYA/formResponse';
+const FORM_URL = 'https://formspree.io/f/xqevklyk';
 const ENTRY_PATTERN = 'entry.66900456';
 const ENTRY_FEEDBACK = 'entry.1643139488';
 const ENTRY_EMAIL = 'entry.874385156';
@@ -278,25 +278,13 @@ function feedback(type) {
   sendToForm(ENTRY_FEEDBACK, type);
 }
 
-function sendToForm(entry, value) {
+function sendToForm(field, value) {
   try {
-    const url = FORM_URL + '?' + entry + '=' + encodeURIComponent(value);
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.name = 'hidden_iframe';
-    document.body.appendChild(iframe);
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = FORM_URL;
-    form.target = 'hidden_iframe';
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = entry;
-    input.value = value;
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => { form.remove(); iframe.remove(); }, 2000);
+    fetch(FORM_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ field: field, value: value })
+    });
   } catch(e) {}
 }
 
