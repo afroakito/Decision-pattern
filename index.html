@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Point this at a decision you regret</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #e8e8e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .wrap {
+    max-width: 540px;
+    width: 100%;
+  }
+  .progress {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 0.1em;
+    margin-bottom: 2.5rem;
+    text-transform: uppercase;
+  }
+  .statement {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: #e8e8e8;
+    margin-bottom: 2.5rem;
+  }
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 11px 24px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: transparent;
+    color: #e8e8e8;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .btn:hover { border-color: #666; background: #111; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .btn-option {
+    padding: 14px 18px;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    background: transparent;
+    color: #ccc;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.5;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .btn-option:hover { border-color: #555; background: #111; color: #e8e8e8; }
+  .sting-label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.04em;
+  }
+  .result-box {
+    border-left: 1px solid #444;
+    padding-left: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .result-text {
+    font-size: 20px;
+    font-weight: 400;
+    color: #e8e8e8;
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+  }
+  .result-sub {
+    font-size: 13px;
+    color: #555;
+  }
+  .feedback-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 2rem;
+  }
+  .btn-share {
+    padding: 10px 20px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: transparent;
+    color: #e8e8e8;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .btn-share:hover { border-color: #666; }
+  .btn-miss {
+    padding: 10px 20px;
+    border: 1px solid #222;
+    border-radius: 6px;
+    background: transparent;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-miss:hover { border-color: #444; color: #888; }
+  .thanks {
+    font-size: 13px;
+    color: #555;
+    margin-top: 1rem;
+  }
+  .restart {
+    font-size: 13px;
+    color: #444;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    display: inline-block;
+    text-decoration: underline;
+    transition: color 0.15s;
+  }
+  .restart:hover { color: #888; }
+  .hidden { display: none; }
+  .fade-in { animation: fadeIn 0.35s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="progress" id="progress">1 / 3</div>
+
+  <div id="s1" class="fade-in">
+    <div class="statement">You made a decision recently that you're not 100% sure was right.</div>
+    <div class="btn-row">
+      <button class="btn" onclick="next('s1','yes')">That's me</button>
+      <button class="btn" onclick="next('s1','no')">Not me</button>
+    </div>
+  </div>
+
+  <div id="s2" class="hidden">
+    <div class="statement">You had a doubt. But kept going anyway.</div>
+    <div class="btn-row">
+      <button class="btn" onclick="next('s2','yes')">Exactly</button>
+      <button class="btn" onclick="next('s2','no')">I reconsidered</button>
+    </div>
+  </div>
+
+  <div id="s3" class="hidden">
+    <div class="sting-label">Looking back — which one stings?</div>
+    <div class="options">
+      <button class="btn-option" onclick="showResult('A')">Stopping felt worse than being wrong. So you kept going.</button>
+      <button class="btn-option" onclick="showResult('B')">You looked for data that confirmed what you'd already decided.</button>
+      <button class="btn-option" onclick="showResult('C')">Someone else's opinion moved you more than the numbers did.</button>
+      <button class="btn-option" onclick="showResult('D')">You remember seeing it coming. You didn't.</button>
+    </div>
+  </div>
+
+  <div id="result" class="hidden">
+    <div class="result-box">
+      <div class="result-text" id="result-text"></div>
+      <div class="result-sub" id="result-sub"></div>
+    </div>
+    <div class="feedback-row">
+      <button class="btn-share" onclick="feedback('hit')">Wanna share</button>
+      <button class="btn-miss" onclick="feedback('miss')">Missed completely</button>
+    </div>
+    <div id="thanks" class="hidden thanks"></div>
+    <div class="restart" onclick="restart()">Try a different decision →</div>
+  </div>
+
+  <div id="result-clean" class="hidden">
+    <div class="result-box">
+      <div class="result-text">Think of a harder one.</div>
+      <div class="result-sub">The decisions that test us aren't the ones we're certain about.</div>
+    </div>
+    <div class="restart" onclick="restart()">Try again →</div>
+  </div>
+</div>
+
+<script>
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfPZnzDSjivR0UWXX--d_zRJ4a8ms6Wyyyu5ui-hqkINcraYA/formResponse';
+const ENTRY_PATTERN = 'entry.66900456';
+const ENTRY_FEEDBACK = 'entry.1643139488';
+
+const results = {
+  A: {
+    text: "You didn't keep going because it was working. You kept going because stopping felt like admitting the past was wasted.",
+    sub: "Sunk cost — disguised as commitment."
+  },
+  B: {
+    text: "You were right before you checked. The data didn't lead you — you led the data.",
+    sub: "Confirmation bias — the most dangerous kind of right."
+  },
+  C: {
+    text: "Your original instinct was different. You never wrote down why you abandoned it. That reasoning is gone now.",
+    sub: "Social pressure — invisible at the time, obvious in hindsight."
+  },
+  D: {
+    text: "You didn't predict it. You remembered predicting it. And next time, you'll do it again — and call that a memory too.",
+    sub: "Hindsight bias — a crime you can't stop committing."
+  }
+};
+
+let currentPattern = null;
+
+function show(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+  el.classList.add('fade-in');
+}
+
+function hide(id) {
+  document.getElementById(id).classList.add('hidden');
+  document.getElementById(id).classList.remove('fade-in');
+}
+
+function next(from, answer) {
+  hide(from);
+  if (from === 's1') {
+    if (answer === 'no') {
+      document.getElementById('progress').textContent = '';
+      show('result-clean');
+    } else {
+      document.getElementById('progress').textContent = '2 / 3';
+      show('s2');
+    }
+  } else if (from === 's2') {
+    if (answer === 'no') {
+      document.getElementById('progress').textContent = '';
+      show('result-clean');
+    } else {
+      document.getElementById('progress').textContent = '3 / 3';
+      show('s3');
+    }
+  }
+}
+
+function showResult(pattern) {
+  currentPattern = pattern;
+  hide('s3');
+  document.getElementById('progress').textContent = '';
+  document.getElementById('result-text').textContent = results[pattern].text;
+  document.getElementById('result-sub').textContent = results[pattern].sub;
+  show('result');
+  sendToForm(ENTRY_PATTERN, pattern);
+}
+
+function feedback(type) {
+  const thanks = document.getElementById('thanks');
+  thanks.classList.remove('hidden');
+  if (type === 'hit') {
+    thanks.textContent = 'Copied to clipboard.';
+    navigator.clipboard.writeText(results[currentPattern].text).catch(() => {});
+  } else {
+    thanks.textContent = 'Noted. We\'ll rewrite it.';
+  }
+  sendToForm(ENTRY_FEEDBACK, type);
+}
+
+function sendToForm(entry, value) {
+  try {
+    const fd = new FormData();
+    fd.append(entry, value);
+    navigator.sendBeacon(FORM_URL, fd);
+  } catch(e) {}
+}
+
+function restart() {
+  ['s1','s2','s3','result','result-clean'].forEach(hide);
+  document.getElementById('thanks').classList.add('hidden');
+  document.getElementById('progress').textContent = '1 / 3';
+  currentPattern = null;
+  setTimeout(() => show('s1'), 50);
+}
+</script>
+</body>
+</html>
